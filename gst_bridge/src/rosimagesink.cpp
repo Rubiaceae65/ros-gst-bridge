@@ -35,6 +35,7 @@
 
 #include <gst/gst.h>
 #include <gst_bridge/rosimagesink.h>
+#include "camera_info_manager/camera_info_manager.hpp"
 
 
 GST_DEBUG_CATEGORY_STATIC (rosimagesink_debug_category);
@@ -205,6 +206,25 @@ static gboolean rosimagesink_open (RosBaseSink * ros_base_sink)
   GST_DEBUG_OBJECT (sink, "open");
   rclcpp::QoS qos = rclcpp::SensorDataQoS().reliable();  //XXX add a parameter for overrides
   sink->pub = ros_base_sink->node->create_publisher<sensor_msgs::msg::Image>(sink->pub_topic, qos);
+  auto caminfo = ros_base_sink->node->create_publisher<sensor_msgs::msg::CameraInfo>("/testje/la", qos);
+   
+ // boost::shared_ptr<camera_info_manager::CameraInfoManager> cinfo_;
+  //camera_info_manager::CameraInfoManager cinfo(*ros_base_sink->node, "testje", "file://test");
+  //rclcpp::Node node = std::make_shared<rclcpp::Node>("my_node_name");
+//camera_info_manager::CameraInfoManager cinfo = std::make_shared<camera_info_manager::CameraInfoManager>(&node, "lalala");
+//  camera_info_manager::CameraInfoManager cinfo = std::make_shared<camera_info_manager::CameraInfoManager>(ros_base_sink->node->get_node_base_interface(), "lalala");
+//  camera_info_manager::CameraInfoManager cinfo = std::make_shared<camera_info_manager::CameraInfoManager>(ros_base_sink->node.get(), "lalala");
+  auto cinfo = std::make_shared<camera_info_manager::CameraInfoManager>(ros_base_sink->node.get(), "lalala");
+  if (!cinfo.get()->loadCameraInfo("file:///home/user/src/robot2/ros2-workspace/src/ps5eye/config/ps5eye_left.yaml"))
+  {
+    RCLCPP_ERROR(ros_base_sink->logger, "CAnnot load camerainfo");
+  }
+
+
+
+  sensor_msgs::msg::CameraInfo ci(cinfo.get()->getCameraInfo());
+
+
   return TRUE;
 }
 

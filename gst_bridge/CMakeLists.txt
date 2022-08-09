@@ -27,6 +27,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 
+find_package(camera_info_manager REQUIRED)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -43,6 +44,7 @@ find_package(std_msgs REQUIRED)
 find_package(audio_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(builtin_interfaces REQUIRED)
+
 # find_package(rosidl_default_generators REQUIRED)
 
 ## Generate added messages and services with any dependencies listed here
@@ -74,6 +76,7 @@ add_library(rosgstbridge SHARED
   src/rosaudiosrc.cpp
   src/rosimagesrc.cpp
   src/rostextsrc.cpp
+  src/gstclockselect.c
   )
 
 
@@ -98,6 +101,7 @@ target_include_directories(rosgstbridge PRIVATE
 target_link_libraries(rosgstbridge PUBLIC
   ${rclcpp_LIBRARIES}
   ${sensor_msgs_LIBRARIES}
+  ${camera_info_manager_LIBRARIES}
   ${audio_msgs_LIBRARIES}
   ${GLIB_LIBRARIES}
   ${GLIB_GIO_LIBRARIES}
@@ -128,6 +132,7 @@ target_include_directories(gst_bridge PUBLIC
 )
 target_link_libraries(gst_bridge PUBLIC
   ${rclcpp_LIBRARIES}
+  ${camera_info_manager_LIBRARIES}
   ${sensor_msgs_LIBRARIES}
   ${audio_msgs_LIBRARIES}
   ${GLIB_LIBRARIES}

@@ -265,6 +265,8 @@ static gboolean rosbasesink_open (RosBaseSink * sink)
   auto opts = rclcpp::NodeOptions();
   opts.context(sink->ros_context); //set a context to generate the node in
   sink->node = std::make_shared<rclcpp::Node>(std::string(sink->node_name), std::string(sink->node_namespace), opts);
+  //sink->node = rclcpp::Node(std::string(sink->node_name), std::string(sink->node_namespace), opts);
+
 
   auto ex_args = rclcpp::ExecutorOptions();
   ex_args.context = sink->ros_context;
@@ -326,7 +328,11 @@ static GstFlowReturn rosbasesink_render (GstBaseSink * base_sink, GstBuffer * bu
 
   // XXX look at the base sink clock synchronising features
   base_time = gst_element_get_base_time(GST_ELEMENT(sink));
-  msg_time = rclcpp::Time(GST_BUFFER_PTS(buf) + base_time + sink->ros_clock_offset, sink->clock->get_clock_type());
+//  msg_time = rclcpp::Time(GST_BUFFER_PTS(buf) + base_time + sink->ros_clock_offset, sink->clock->get_clock_type());
+//
+  // figure out if this works when pts is wallclock time 
+  msg_time = rclcpp::Time(GST_BUFFER_PTS(buf), sink->clock->get_clock_type());
+
 
   if(NULL != sink_class->render)
     return sink_class->render(sink, buf, msg_time);

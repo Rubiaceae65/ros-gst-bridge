@@ -27,7 +27,9 @@
 #include <gst_bridge/rosaudiosrc.h>
 #include <gst_bridge/rosimagesrc.h>
 #include <gst_bridge/rostextsrc.h>
+#include <gst_bridge/gstclockselect.h>
 
+GType gst_clock_select_get_type (void);
 
 static gboolean
 plugin_init (GstPlugin * plugin)
@@ -53,6 +55,9 @@ plugin_init (GstPlugin * plugin)
 
   gst_element_register (plugin, "rostextsrc", GST_RANK_NONE,
     GST_TYPE_ROSTEXTSRC);
+
+    gst_element_register (plugin, "clockselect", GST_RANK_NONE,
+		          GST_TYPE_CLOCK_SELECT);
 
 
   return true;
